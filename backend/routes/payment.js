@@ -1,7 +1,7 @@
 import express from "express";
 import Razorpay from "razorpay";
 import crypto from "crypto";
-import { payment } from "../models/payment.js";
+import Payment from "../models/payment.js";
 
 const router = express.Router();
 
@@ -42,23 +42,19 @@ router.post("/verify", async (req, res) => {
 	const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
 		req.body;
 
-	// console.log("req.body", req.body);
-
 	try {
 		// Create Sign
 		const sign = razorpay_order_id + "|" + razorpay_payment_id;
-
+		console.log(req.body);
 		// Create ExpectedSign
 		const expectedSign = crypto
-			.createHmac("sha256", {}.RAZORPAY_SECRET)
+			.createHmac("sha256", process.env.RAZORPAY_SECRET)
 			.update(sign.toString())
 			.digest("hex");
 
-		console.log(razorpay_signature === expectedSign);
-
 		// Create isAuthentic
 		const isAuthentic = expectedSign === razorpay_signature;
-
+		console.log(isAuthentic);
 		// Condition
 		if (isAuthentic) {
 			const payment = new Payment({
@@ -67,13 +63,13 @@ router.post("/verify", async (req, res) => {
 				razorpay_signature,
 			});
 
-			// Save Payment
 			await payment.save();
 
-			// Send Message
 			res.json({
-				message: "Payement Successfully",
+				message: "Payment Successfully",
 			});
+		} else {
+			res.status(400).json({ message: "Payment verification failed!" });
 		}
 	} catch (error) {
 		res.status(500).json({ message: "Internal Server Error!" });
