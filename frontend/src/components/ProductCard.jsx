@@ -6,8 +6,26 @@ import {
 	Typography,
 	Button,
 } from "@material-tailwind/react";
+import { useState } from "react";
+import axios from "axios";
 
 export default function ProductCard() {
+	const [amount, setamount] = useState(350);
+
+	// handlePayment Function
+	const handlePayment = async () => {
+		try {
+			const res = await axios.post(
+				`${import.meta.env.VITE_BACKEND_URL}/api/payment/order`,
+				{ amount }
+			);
+
+			const data = res.data;
+			console.log(data);
+		} catch (error) {
+			console.log(error);
+		}
+	};
 	return (
 		<Card className="mt-6 w-96 bg-[#222f3e] text-white">
 			{/* CardHeader */}
@@ -35,7 +53,9 @@ export default function ProductCard() {
 			{/* CardFooter  */}
 			<CardFooter className="pt-0">
 				{/* Buy Now Button  */}
-				<Button className="w-full bg-[#1B9CFC]">Buy Now</Button>
+				<Button onClick={handlePayment} className="w-full bg-[#1B9CFC]">
+					Buy Now
+				</Button>
 			</CardFooter>
 		</Card>
 	);
