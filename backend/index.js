@@ -1,6 +1,5 @@
 import express from "express";
-import dotenv from "dotenv";
-dotenv.config();
+import "dotenv/config";
 import cors from "cors";
 import connectDB from "./db/db.js";
 import paymentRoute from "./routes/payment.js";
@@ -19,4 +18,4 @@ app.get("/", (req, res) => {
 
 app.use("/api/payment", paymentRoute);
 
-app.listen(PORT, () => console.log("server is running on PORt", PORT));
+app.listen(PORT, () => console.log("server is running on PORT", PORT));
